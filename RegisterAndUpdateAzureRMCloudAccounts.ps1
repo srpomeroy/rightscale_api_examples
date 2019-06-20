@@ -83,6 +83,6 @@ foreach ($cloudHref in $cloudHrefs) {
     Invoke-RestMethod -Method $requestVerb `
         -Uri "https://$($accountEndpoint)$($url)" `
         -ContentType "application/x-www-form-urlencoded" `
-        -Headers @{ "X_API_VERSION"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
         -Body $body
 }
