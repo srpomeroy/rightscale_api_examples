@@ -4,7 +4,7 @@
 # API Docs: https://reference.rightscale.com/api1.5/resources/ResourceCloudAccounts.html
 # Refresh Token: https://docs.rightscale.com/cm/dashboard/settings/account/enable_oauth#steps
 # Create an Azure Active Directory Application: https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#create-an-azure-active-directory-application
-# Retireve an Azure Active Directory Application Tenant ID, Client ID, and Client Secret: https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#get-values-for-signing-in
+# Retrieve an Azure Active Directory Application Tenant ID, Client ID, and Client Secret: https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#get-values-for-signing-in
 
 $accountEndpoint = "<YOUR_ACCOUNT_ENDPOINT>" # Cloud Management Endpoints: https://docs.rightscale.com/api/general_usage.html#endpoints
 $accountId = "<YOUR_ACCOUNT_NUMBER>" # Your CMP Account ID
@@ -64,7 +64,6 @@ $currentCloudAccounts = $currentCloudAccounts | Select-Object created_at, update
     @{name="self";expression={$_.links | Where-Object {$_.rel -eq 'self'} | Select-Object -ExpandProperty href}},`
     @{name="cloud";expression={$_.links | Where-Object {$_.rel -eq 'cloud'} | Select-Object -ExpandProperty href}},`
     @{name="account";expression={$_.links | Where-Object {$_.rel -eq 'account'} | Select-Object -ExpandProperty href}}
-
 
 foreach ($cloudHref in $cloudHrefs) {
     if($currentCloudAccounts.cloud -contains $cloudHref) {
