@@ -50,7 +50,7 @@ $cloudHrefs = @(
 )
 
 $token = Invoke-RestMethod -Method Post -Uri "https://$($accountEndpoint)/api/oauth2" `
-    -Headers @{ "X-API-Version"="1.5" } `
+    -Headers @{ "X-API-Version"="1.5"; "X-Account"=$accountId } `
     -Body @{
         grant_type="refresh_token";
         refresh_token=$refreshToken
