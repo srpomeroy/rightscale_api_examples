@@ -14,6 +14,7 @@ $clientSecret = "<YOUR_AZURE_APPLICATION_CLIENT_SECRET>" # Secret for the applic
 $tenantId = "<YOUR_AZURE_TENANT_ID>" # Azure AD Tenant ID for the application
 $subscriptionId = "<YOUR_AZURE_SUBSCRIPTION_ID>" # Azure Subscription the application has access to and that you want to manage in CMP
 
+Add-Type -AssemblyName System.Web
 $clientIdEncoded = [System.Web.HttpUtility]::UrlEncode($clientId)
 $clientSecretEncoded = [System.Web.HttpUtility]::UrlEncode($clientSecret)
 $tenantIdEncoded = [System.Web.HttpUtility]::UrlEncode($tenantId)
