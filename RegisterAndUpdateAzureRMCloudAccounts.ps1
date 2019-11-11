@@ -86,3 +86,16 @@ foreach ($cloudHref in $cloudHrefs) {
         -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
         -Body $body
 }
+
+# Create Credentials
+Invoke-RestMethod -Method "Post" `
+        -Uri "https://$($accountEndpoint)/api/credentials" `
+        -ContentType "application/x-www-form-urlencoded" `
+        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+        -Body "credential[name]=AZURE_APPLICATION_ID&credential[value]=$clientId&credential[description]=Azure Application ID for Policies and Plugins"
+
+Invoke-RestMethod -Method "Post" `
+        -Uri "https://$($accountEndpoint)/api/credentials" `
+        -ContentType "application/x-www-form-urlencoded" `
+        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+        -Body "credential[name]=AZURE_APPLICATION_KEY&credential[value]=$clientSecret&credential[description]=Azure Application Key for Policies and Plugins"
