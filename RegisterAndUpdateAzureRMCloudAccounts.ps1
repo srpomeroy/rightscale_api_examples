@@ -92,10 +92,22 @@ Invoke-RestMethod -Method "Post" `
         -Uri "https://$($accountEndpoint)/api/credentials" `
         -ContentType "application/x-www-form-urlencoded" `
         -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
-        -Body "credential[name]=AZURE_APPLICATION_ID&credential[value]=$clientId&credential[description]=Azure Application ID for Policies and Plugins"
+        -Body "credential[name]=AZURE_TENANT_ID&credential[value]=$tenantIdEncoded&credential[description]=Azure Tenant ID"
 
 Invoke-RestMethod -Method "Post" `
         -Uri "https://$($accountEndpoint)/api/credentials" `
         -ContentType "application/x-www-form-urlencoded" `
         -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
-        -Body "credential[name]=AZURE_APPLICATION_KEY&credential[value]=$clientSecret&credential[description]=Azure Application Key for Policies and Plugins"
+        -Body "credential[name]=AZURE_SUBSCRIPTION_IDY&credential[value]=$subscriptionIdEncoded&credential[description]=Azure Subscription Id"
+
+Invoke-RestMethod -Method "Post" `
+        -Uri "https://$($accountEndpoint)/api/credentials" `
+        -ContentType "application/x-www-form-urlencoded" `
+        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+        -Body "credential[name]=AZURE_APPLICATION_ID&credential[value]=$clientIdEncoded&credential[description]=Azure Application ID for Policies and Plugins"
+
+Invoke-RestMethod -Method "Post" `
+        -Uri "https://$($accountEndpoint)/api/credentials" `
+        -ContentType "application/x-www-form-urlencoded" `
+        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+        -Body "credential[name]=AZURE_APPLICATION_KEY&credential[value]=$clientSecretEncoded&credential[description]=Azure Application Key for Policies and Plugins"
