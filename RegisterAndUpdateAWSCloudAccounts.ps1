@@ -57,7 +57,7 @@ foreach ($cloudHref in $cloudHrefs) {
         # Cloud/Region is already registered, update cloud account
         $requestVerb = "Put"
         $url = $currentCloudAccounts | Where-Object {$_.cloud -eq $cloudHref} | Select-Object -ExpandProperty self
-        $body = "cloud_account[creds][aws_account_number]=$accountNumberEncoded&cloud_account[creds][aws_access_key_id]=$accessKeyIdEncoded&cloud_account[creds][aws_secret_access_key]=$secretAccessKeyEncoded"
+        $body = "cloud_account[creds][aws_access_key_id]=$accessKeyIdEncoded&cloud_account[creds][aws_secret_access_key]=$secretAccessKeyEncoded"
     }
     else {
         # Cloud/Region is not registered, create cloud account
