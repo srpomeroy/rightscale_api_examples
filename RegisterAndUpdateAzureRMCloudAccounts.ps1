@@ -98,7 +98,7 @@ Invoke-RestMethod -Method "Post" `
         -Uri "https://$($accountEndpoint)/api/credentials" `
         -ContentType "application/x-www-form-urlencoded" `
         -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
-        -Body "credential[name]=AZURE_SUBSCRIPTION_IDY&credential[value]=$subscriptionIdEncoded&credential[description]=Azure Subscription Id"
+        -Body "credential[name]=AZURE_SUBSCRIPTION_ID&credential[value]=$subscriptionIdEncoded&credential[description]=Azure Subscription Id"
 
 Invoke-RestMethod -Method "Post" `
         -Uri "https://$($accountEndpoint)/api/credentials" `
