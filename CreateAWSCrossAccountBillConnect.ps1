@@ -89,7 +89,6 @@ function Get-CMPAccessToken {
 
 $accessToken = Get-CMPAccessToken -Endpoint $Endpoint -RefreshToken $RefreshToken -AccountId $MasterAccountId
 
-# Check for existing bill connect
 $contentType = "application/json"
 
 $optimaHeader = @{
@@ -98,7 +97,7 @@ $optimaHeader = @{
 }
 
 try {
-    $getResult = Invoke-RestMethod -Uri "https://onboarding.rightscale.com/api/onboarding/orgs/$OrganizationID/bill_connects/aws/aws-$($AWSBillAccountId)" -Method Get -Headers $optimaHeader -ContentType $contentType -ErrorAction SilentlyContinue -ErrorVariable getResultError
+    $getResult = Invoke-RestMethod -UseBasicParsing -Uri "https://onboarding.rightscale.com/api/onboarding/orgs/$OrganizationID/bill_connects/aws/aws-$($AWSBillAccountId)" -Method Get -Headers $optimaHeader -ContentType $contentType -ErrorAction SilentlyContinue -ErrorVariable getResultError
     Write-Warning "There is already a bill connect with that account id!"
     $getResult
 }
@@ -121,16 +120,17 @@ $bodyPayload = @{
 } | ConvertTo-Json
 
 try {
-    $postResult = Invoke-WebRequest -Uri "https://onboarding.rightscale.com/api/onboarding/orgs/$OrganizationID/bill_connects/aws/iam_role" -Method Post -Headers $optimaHeader -ContentType $contentType -Body $bodyPayload -ErrorAction SilentlyContinue -ErrorVariable postResultError
+    $postResult = Invoke-WebRequest -UseBasicParsing -Uri "https://onboarding.rightscale.com/api/onboarding/orgs/$OrganizationID/bill_connects/aws/iam_role" -Method Post -Headers $optimaHeader -ContentType $contentType -Body $bodyPayload -ErrorAction SilentlyContinue -ErrorVariable postResultError
 
     if ($postResult.StatusCode -eq 201) {
         Write-Verbose "Successfully created bill connect!"
         Write-Verbose "Note: Costs may take up to 24 hours to populate."
     }
     else {
-
+        Write-Warning "Unexpected result. Status Code: $($postResult.StatusCode)"
     }
 }
 catch {
+    Write-Warning "Failed to connect bill!"
     Write-Warning $postResultError
 }
