@@ -17,6 +17,7 @@ param(
     $subscriptionName = "" # Azure Subscription Name (will be the name of the new RS Child Account)
 )
 
+Add-Type -AssemblyName System.Web
 $shardCluster = $accountEndpoint.split('.')[0].split('-')[-1]
 $clientIdEncoded = [System.Web.HttpUtility]::UrlEncode($clientId)
 $clientSecretEncoded = [System.Web.HttpUtility]::UrlEncode($clientSecret)
@@ -60,12 +61,17 @@ $token = Invoke-RestMethod -Method Post -Uri "https://$($accountEndpoint)/api/oa
         refresh_token=$refreshToken
     }
 
+if (-not($token)) {
+    Write-Warning "Error retrieving access token!"
+    EXIT 1
+}
+
 Write-Output "Subscription Name: $subscriptionName"
 Write-Output "Subscription ID: $subscriptionId"
 
 $currentChildAccounts = Invoke-RestMethod -Method Get `
--Uri "https://$($accountEndpoint)/api/child_accounts" `
--Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$masterAccountId }
+    -Uri "https://$($accountEndpoint)/api/child_accounts" `
+    -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$masterAccountId }
 
 if ($currentChildAccounts.name -notcontains $subscriptionName){
     # Create RS Child Account
@@ -92,6 +98,9 @@ $currentCloudAccounts = $currentCloudAccounts | Select-Object created_at, update
     @{name="cloud";expression={$_.links | Where-Object {$_.rel -eq 'cloud'} | Select-Object -ExpandProperty href}},`
     @{name="account";expression={$_.links | Where-Object {$_.rel -eq 'account'} | Select-Object -ExpandProperty href}}
 
+
+$successResults = 0
+$errorResults = 0
 foreach ($cloudHref in $cloudHrefs) {
     Write-Output "Cloud Href: $cloudHref"
     if($currentCloudAccounts.cloud -contains $cloudHref) {
@@ -109,11 +118,23 @@ foreach ($cloudHref in $cloudHrefs) {
         $body = "cloud_account[cloud_href]=$cloudHref&cloud_account[creds][client_id]=$clientIdEncoded&cloud_account[creds][client_secret]=$clientSecretEncoded&cloud_account[creds][tenant_id]=$tenantIdEncoded&cloud_account[creds][subscription_id]=$subscriptionIdEncoded"
     }
 
-    Invoke-RestMethod -Method $requestVerb `
-        -Uri "https://$($accountEndpoint)$($url)" `
-        -ContentType "application/x-www-form-urlencoded" `
-        -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
-        -Body $body
+    try {
+        $result = Invoke-RestMethod -Method $requestVerb `
+            -Uri "https://$($accountEndpoint)$($url)" `
+            -ContentType "application/x-www-form-urlencoded" `
+            -Headers @{ "X-API-Version"="1.5"; "Authorization"="Bearer $($token.access_token)"; "X-Account"=$accountId } `
+            -Body $body -ErrorAction SilentlyContinue -ErrorVariable cloudRegResponse
+        if($result) {
+            $successResults++
+        }
+        else {
+            $errorResults++
+        }
+    }
+    catch {
+        Write-Warning "Error setting cloud credentials! $_"
+        $errorResults++
+    }
 }
 
 Write-Output "Creating CM Credentials.."
